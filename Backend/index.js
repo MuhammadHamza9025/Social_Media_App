@@ -149,7 +149,6 @@ app.get('/login', usermiddleware, async (req, res) => {
 
 app.post('/post', uploadfile.single('image'), usermiddleware, async (req, res) => {
     const { title, desc, image } = req.body
-    // console.log('the post data is', req.body)
     console.log(title, desc)
     const post = new Posts({
         title,
@@ -174,15 +173,11 @@ app.get('/mypost', usermiddleware, async (req, res) => {
 
 app.get('/user/:id', async (req, res) => {
     const id = req.params.id
-    // const findfollower = await Users.findOne({ _id: req.get_email._id, followers: id })
-    // if (findfollower) {
-    //     console.log('hhhhhhhh')
-    // }
+
     const getuser = await Users.findOne({ _id: id })
     const get = await Posts.find({ postedby: getuser._id })
 
 
-    // console.log(get.map((e) => e.postedby))
     res.json({ userdetails: getuser, posts: get })
     console.log(get)
 
