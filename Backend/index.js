@@ -364,6 +364,15 @@ app.post('/contact', usermiddleware, async (req, res) => {
 
 })
 
+app.post('/deleteposts', usermiddleware, async (req, res) => {
+    const { id } = req.body
+    console.log('the id', id)
+
+    const getlogineduser = await Users.findOne({ _id: req.get_email._id })
+    const getpost = await Posts.findByIdAndDelete({ _id: id, postedby: getlogineduser }).then(() => console.log('object'))
+
+})
+
 
 
 app.listen(port, () => console.log("running of port 9000"))
