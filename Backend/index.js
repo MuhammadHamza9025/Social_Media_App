@@ -181,11 +181,6 @@ app.post('/user/:id', usermiddleware, async (req, res) => {
     const get_user = await Users.findOne({ _id: req.get_email._id })
     console.log(getuser._id)
     const check = get_user.following.includes(id)
-    // console.log(getuser.followers.includes(get_user))
-    // console.log(getuser.followers.map((e) => e == get_user._id))
-
-
-
 
     res.json({ userdetails: getuser, posts: get, check })
 
