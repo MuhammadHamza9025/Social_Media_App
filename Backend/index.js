@@ -175,7 +175,7 @@ app.post('/user/:id', usermiddleware, async (req, res) => {
 
     const id = req.params.id
 
-
+    ////
     const getuser = await Users.findOne({ _id: id })
     const get = await Posts.find({ postedby: getuser._id })
     const get_user = await Users.findOne({ _id: req.get_email._id })
