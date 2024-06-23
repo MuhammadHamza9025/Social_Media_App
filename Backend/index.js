@@ -171,15 +171,24 @@ app.get('/mypost', usermiddleware, async (req, res) => {
     res.json(getallpr)
 })
 
-app.get('/user/:id', async (req, res) => {
+app.post('/user/:id', usermiddleware, async (req, res) => {
+
     const id = req.params.id
+
 
     const getuser = await Users.findOne({ _id: id })
     const get = await Posts.find({ postedby: getuser._id })
+    const get_user = await Users.findOne({ _id: req.get_email._id })
+    console.log(getuser._id)
+    const check = get_user.following.includes(id)
+    // console.log(getuser.followers.includes(get_user))
+    // console.log(getuser.followers.map((e) => e == get_user._id))
 
 
-    res.json({ userdetails: getuser, posts: get })
-    console.log(get)
+
+
+    res.json({ userdetails: getuser, posts: get, check })
+
 
 })
 
@@ -209,7 +218,6 @@ app.post('/getcomment', usermiddleware, async (req, res) => {
     else {
         const updatelikes = await Posts.findOneAndUpdate({ _id: id }, { $push: { comment: { user: get_user, text: post } } }, { new: true })
         res.json({ success: true, message: "Comment Posted Successfully", updatelikes })
-        console.log(updatelikes)
     }
 
 
@@ -222,7 +230,6 @@ app.post('/otherusers', usermiddleware, async (req, res) => {
     const allusers = await Users.find({ _id: { $ne: req.get_email._id } }).limit(10)
     // const me = await Users.findOne({ _id: req.get_email._id })
 
-    console.log(allusers)
     res.json(allusers)
 })
 
@@ -246,18 +253,14 @@ app.post('/profileedit', uploadfile.single('image'), usermiddleware, async (req,
             { image: `http://localhost:${port}/images/${req.file.filename}` },
             { new: true }
         );
-        console.log('Profile image updated successfully:', edit);
         res.send('Profile image updated successfully');
     } catch (error) {
-        console.error('Error updating profile image:', error);
         res.status(500).send('Error updating profile image');
     }
 });
 
 app.post('/interests', usermiddleware, async (req, res) => {
-    console.log(req.body.interests)
     const edit_int = await Users.findByIdAndUpdate({ _id: req.get_email._id }, { $push: { interests: req.body.interests } }, { new: true })
-    console.log(edit_int)
 })
 
 
@@ -291,7 +294,6 @@ app.post('/follow', usermiddleware, async (req, res) => {
         }
     } catch (error) {
         // If an error occurs during the database operation, return an error message
-        console.error("Error:", error);
         return res.status(500).json({ success: false, message: "An error occurred" });
     }
 });
@@ -300,7 +302,6 @@ app.post('/follow', usermiddleware, async (req, res) => {
 // app.get('/folowtext', usermiddleware, async (req, res) => {
 //     const findfollower = await Users.findOne({ _id: id }, { followers: req.get_email._id })
 //     if (findfollower) {
-//         console.log('vasucvkukj')
 //     }
 
 
@@ -343,7 +344,6 @@ app.get('/post', usermiddleware, async (req, res) => {
 
         res.json(allPosts);
     } catch (error) {
-        console.error("Error:", error);
         res.status(500).json({ success: false, message: "An error occurred" });
     }
 });
@@ -366,7 +366,6 @@ app.post('/contact', usermiddleware, async (req, res) => {
 
 app.post('/deleteposts', usermiddleware, async (req, res) => {
     const { id } = req.body
-    console.log('the id', id)
 
     const getlogineduser = await Users.findOne({ _id: req.get_email._id })
     const getpost = await Posts.findByIdAndDelete({ _id: id, postedby: getlogineduser }).then(() => console.log('object'))
